@@ -36,8 +36,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="feedback"
         options={{
-          title: 'Feedback',
+          title: 'Comentários',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: 'Meus Comentários',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="heart.fill" color={color} />,
         }}
       />
     </Tabs>
