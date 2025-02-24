@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Keyb
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Provider, Menu, Button } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const CommentRegistration = () => {
     const [title, setTitle] = useState('');
@@ -21,16 +23,35 @@ const CommentRegistration = () => {
         setShowDatePicker(false);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!title || !message || !author || !department || commentType === 'Tipo') {
             Alert.alert('Aviso', 'Por favor, preencha todos os campos.');
             return;
         }
 
-       
+        const newComment = {
+            id: Date.now().toString(),
+            title,
+            message,
+            author,
+            department,
+            date: date.toISOString(),
+            type: commentType,
+            status: 'Pendente' // Status inicial
+        };
 
-        Alert.alert('Sucesso', 'Comentário cadastrado com sucesso!');
-        Keyboard.dismiss(); 
+        try {
+            const existingComments = await AsyncStorage.getItem('comments');
+            const comments = existingComments ? JSON.parse(existingComments) : [];
+            comments.push(newComment);
+            await AsyncStorage.setItem('comments', JSON.stringify(comments));
+
+            Alert.alert('Sucesso', 'Comentário cadastrado com sucesso!');
+            Keyboard.dismiss();
+            navigation.navigate('Acompanhamento');
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro ao salvar o comentário.');
+        }
     };
 
     return (

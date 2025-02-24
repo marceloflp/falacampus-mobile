@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Keyboard } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Keyboard, FlatList, RefreshControl } from 'react-native';
 import { Provider, Menu, Button } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SearchComments = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState('Buscar por');
     const [menuVisible, setMenuVisible] = useState(false);
+    const [comments, setComments] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const loadComments = async () => {
+        try {
+            const storedComments = await AsyncStorage.getItem('comments');
+            if (storedComments) {
+                setComments(JSON.parse(storedComments));
+            }
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro ao carregar os comentários.');
+        }
+    };
 
     const handleSearch = () => {
         if (!searchQuery.trim()) {
@@ -15,6 +29,15 @@ const SearchComments = () => {
         }
         Alert.alert('Pesquisar', `Buscando por: ${searchQuery} - Tipo: ${searchType}`);
     };
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        loadComments().then(() => setRefreshing(false));
+    };
+
+    useEffect(() => {
+        loadComments();
+    }, []);
 
     return (
         <Provider>
@@ -63,6 +86,20 @@ const SearchComments = () => {
                 
                 <View style={styles.responseCard}>
                     <Text style={styles.responseTitle}>Comentários Respondidos</Text>
+                    <FlatList
+                        data={comments}
+                        keyExtractor={(item) => item.id}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        }
+                        renderItem={({ item }) => (
+                            <View style={styles.commentItem}>
+                                <Text style={styles.commentTitle}>{item.title}</Text>
+                                <Text style={styles.commentText}>{item.message}</Text>
+                                <Text style={styles.commentStatus}>Status: {item.status}</Text>
+                            </View>
+                        )}
+                    />
                 </View>
             </View>
         </Provider>
@@ -162,11 +199,29 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         marginTop: 20,
+        flex: 1,
     },
     responseTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    commentItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#CCC',
+    },
+    commentTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    commentText: {
+        fontSize: 14,
+        color: '#333',
+    },
+    commentStatus: {
+        fontSize: 12,
+        color: '#666',
     },
 });
 
