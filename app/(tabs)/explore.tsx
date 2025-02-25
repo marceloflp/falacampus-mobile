@@ -96,6 +96,7 @@ const SearchComments = () => {
                             <View style={styles.commentItem}>
                                 <Text style={styles.commentTitle}>{item.title}</Text>
                                 <Text style={styles.commentText}>{item.message}</Text>
+                                <Text style={styles.commentStatus}>Autor: {item.author}</Text>
                                 <Text style={styles.commentStatus}>Status: {item.status}</Text>
                             </View>
                         )}

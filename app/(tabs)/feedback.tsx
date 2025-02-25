@@ -37,7 +37,7 @@ const CommentRegistration = () => {
             department,
             date: date.toISOString(),
             type: commentType,
-            status: 'Pendente' // Status inicial
+            status: 'Pendente'
         };
 
         try {
@@ -48,9 +48,9 @@ const CommentRegistration = () => {
 
             Alert.alert('Sucesso', 'Comentário cadastrado com sucesso!');
             Keyboard.dismiss();
-            navigation.navigate('Acompanhamento');
+            navigation.navigate('SearchComments');
         } catch (error) {
-            Alert.alert('Erro', 'Ocorreu um erro ao salvar o comentário.');
+            console.log(error);
         }
     };
 
