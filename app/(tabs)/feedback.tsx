@@ -1,27 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Keyboard } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Provider, Menu, Button } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useNavigation } from '@react-navigation/native';
 
 const CommentRegistration = () => {
+    const navigation = useNavigation();
+    
     const [title, setTitle] = useState('');
     const [message, setMessage] = useState('');
     const [author, setAuthor] = useState('');
     const [department, setDepartment] = useState('');
-    const [date, setDate] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
     const [commentType, setCommentType] = useState('Tipo');
     const [menuVisible, setMenuVisible] = useState(false);
 
-    const handleDateChange = (event: any, selectedDate?: Date) => {
-        if (event.type === "set" && selectedDate) {
-            setDate(selectedDate);
-        }
-        setShowDatePicker(false);
-    };
+    // Data fixa para o dia atual
+    const currentDate = new Date().toLocaleDateString('pt-BR');
 
     const handleSave = async () => {
         if (!title || !message || !author || !department || commentType === 'Tipo') {
@@ -35,7 +30,7 @@ const CommentRegistration = () => {
             message,
             author,
             department,
-            date: date.toISOString(),
+            date: new Date().toISOString(), // Salva a data real do sistema
             type: commentType,
             status: 'Pendente'
         };
@@ -48,7 +43,7 @@ const CommentRegistration = () => {
 
             Alert.alert('Sucesso', 'Comentário cadastrado com sucesso!');
             Keyboard.dismiss();
-            navigation.navigate('SearchComments');
+            navigation.navigate('SearchComments'); // Agora a navegação está correta
         } catch (error) {
             console.log(error);
         }
@@ -84,16 +79,9 @@ const CommentRegistration = () => {
                     />
 
                     <Text style={styles.label}>Data: *</Text>
-                    <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
-                        <Text>{date.toLocaleDateString('pt-BR')}</Text>
-                    </TouchableOpacity>
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={date}
-                            mode="date"
-                            onChange={handleDateChange}
-                        />
-                    )}
+                    <View style={styles.input}>
+                        <Text>{currentDate}</Text>
+                    </View>
 
                     <Text style={styles.label}>Autor do comentário: *</Text>
                     <TextInput
@@ -140,7 +128,7 @@ const CommentRegistration = () => {
                         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                             <Text style={styles.buttonText}>Salvar</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.cancelButton}>
+                        <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
                             <Text style={styles.buttonText}>Cancelar</Text>
                         </TouchableOpacity>
                     </View>

@@ -85,7 +85,7 @@ const SearchComments = () => {
                 </View>
                 
                 <View style={styles.responseCard}>
-                    <Text style={styles.responseTitle}>Comentários Respondidos</Text>
+                    <Text style={styles.responseTitle}>Comentários Enviados</Text>
                     <FlatList
                         data={comments}
                         keyExtractor={(item) => item.id}
@@ -224,6 +224,32 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#666',
     },
+    responseCard: {
+        backgroundColor: 'white',
+        width: '90%',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
+        marginTop: 20,
+        maxHeight: 300,
+        alignItems: 'center',
+    },
+    Title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    tItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#CCC',
+        width: '100%',
+    }
 });
 
 export default SearchComments;
