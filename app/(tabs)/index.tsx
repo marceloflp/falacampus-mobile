@@ -10,7 +10,9 @@ import {
 
 export default function App() {
   return (
+    
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      
       {/* Cabeçalho: Logo Fala Campus à esquerda, Login à direita */}
       <View style={styles.header}>
         <Image source={require('../../assets/images/Fala_campus-logo.png')} style={styles.logo} />
