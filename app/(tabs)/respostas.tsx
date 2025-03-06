@@ -63,7 +63,15 @@ export default function App() {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Cabeçalho: Logo Fala Campus à esquerda, Login à direita */}
       <View style={styles.header}>
+<<<<<<< HEAD
        <Image source={require('../../assets/images/Fala_campus-logo.png')} style={styles.logo} />
+=======
+<<<<<<< HEAD
+                <Image source={require('../assets/images/Fala_campus-logo.png')} style={styles.logo} />
+=======
+                <Image source={require('../../assets/images/Fala_campus-logo.png')} style={styles.logo} />
+>>>>>>> 6d0bb37 (Salvando progresso antes do merge)
+>>>>>>> 9664652 (Salvando progresso antes do merge)
         <TouchableOpacity style={styles.loginButton}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
