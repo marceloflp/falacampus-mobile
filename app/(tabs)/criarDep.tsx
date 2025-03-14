@@ -53,7 +53,7 @@ const CadastroDepartamento = () => {
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.footer}>Projeto Fala Campus - DAC/ADS/IFPB 2022</Text>
+      <Text style={styles.footer}>Projeto Fala Campus Mobile - IFPB - Guarabira 2025</Text>
     </View>
   );
 };
