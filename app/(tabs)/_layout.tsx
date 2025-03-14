@@ -62,7 +62,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="apagarDep"
+        name="deps"
         options={{
           title: 'Departamentos',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="heart.fill" color={color} />,

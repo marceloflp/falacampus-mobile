@@ -4,15 +4,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign, Feather } from '@expo/vector-icons';
 
 
-const ApagarDepartamento = () => {
+const Departamentos = () => {
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editName, setEditName] = useState('');
-  const [isEditing, setIsEditing] = useState(false); // Modo de edição
-  const [isDeleting, setIsDeleting] = useState(false); // Modo de exclusão
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Carrega os departamentos salvos
   const loadDepartments = async () => {
@@ -41,7 +41,7 @@ const ApagarDepartamento = () => {
     try {
       await AsyncStorage.removeItem(`department_${selectedDepartment.id}`);
       setModalVisible(false);
-      loadDepartments(); // Recarrega a lista após a deleção
+      loadDepartments();
       Alert.alert('Sucesso', 'Departamento deletado com sucesso!');
     } catch (error) {
       console.log(error);
@@ -74,12 +74,24 @@ const ApagarDepartamento = () => {
         JSON.stringify(updatedDepartment)
       );
       setEditModalVisible(false);
-      loadDepartments(); // Recarrega a lista após a edição
+      loadDepartments();
       Alert.alert('Sucesso', 'Departamento editado com sucesso!');
     } catch (error) {
       console.log(error);
       Alert.alert('Erro', 'Ocorreu um erro ao editar o departamento.');
     }
+  };
+
+  // Função para ativar o modo de edição e desativar o modo de exclusão
+  const activateEditMode = () => {
+    setIsEditing(true); 
+    setIsDeleting(false);
+  };
+
+  // Função para ativar o modo de exclusão e desativar o modo de edição
+  const activateDeleteMode = () => {
+    setIsDeleting(true);
+    setIsEditing(false);
   };
 
   // Carrega os departamentos ao abrir a página
@@ -101,14 +113,14 @@ const ApagarDepartamento = () => {
       <View style={styles.iconsContainer}>
         <TouchableOpacity 
           style={styles.iconButton} 
-          onPress={() => setIsEditing(!isEditing)}
+          onPress={activateEditMode}
         >
           <AntDesign name="edit" size={24} color="#6cb43f" />
           <Text style={styles.iconText}>Editar</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.iconButton} 
-          onPress={() => setIsDeleting(!isDeleting)}
+          onPress={activateDeleteMode}
         >
           <Feather name="trash-2" size={24} color="#ff4444" />
           <Text style={styles.iconText}>Excluir</Text>
@@ -299,4 +311,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ApagarDepartamento;
+export default Departamentos;
