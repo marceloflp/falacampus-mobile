@@ -64,7 +64,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="apagarDep"
         options={{
-          title: 'Excluir Departamento',
+          title: 'Departamentos',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="heart.fill" color={color} />,
         }}
       />

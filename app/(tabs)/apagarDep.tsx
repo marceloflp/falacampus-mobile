@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, FlatList, Modal, RefreshControl, } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, FlatList, Modal, RefreshControl, TextInput, } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AntDesign, Feather } from '@expo/vector-icons';
 
 
 const ApagarDepartamento = () => {
@@ -8,6 +9,10 @@ const ApagarDepartamento = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [isEditing, setIsEditing] = useState(false); // Modo de edição
+  const [isDeleting, setIsDeleting] = useState(false); // Modo de exclusão
 
   // Carrega os departamentos salvos
   const loadDepartments = async () => {
@@ -44,6 +49,39 @@ const ApagarDepartamento = () => {
     }
   };
 
+  // Abre o modal de edição
+  const handleEdit = (department) => {
+    setSelectedDepartment(department);
+    setEditName(department.nome);
+    setEditModalVisible(true);
+  };
+
+  // Salva as edições do departamento
+  const handleSaveEdit = async () => {
+    if (!selectedDepartment || !editName.trim()) {
+      Alert.alert('Aviso', 'Por favor, preencha o nome do departamento.');
+      return;
+    }
+
+    const updatedDepartment = {
+      ...selectedDepartment,
+      nome: editName.trim(),
+    };
+
+    try {
+      await AsyncStorage.setItem(
+        `department_${updatedDepartment.id}`,
+        JSON.stringify(updatedDepartment)
+      );
+      setEditModalVisible(false);
+      loadDepartments(); // Recarrega a lista após a edição
+      Alert.alert('Sucesso', 'Departamento editado com sucesso!');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Erro', 'Ocorreu um erro ao editar o departamento.');
+    }
+  };
+
   // Carrega os departamentos ao abrir a página
   useEffect(() => {
     loadDepartments();
@@ -57,8 +95,25 @@ const ApagarDepartamento = () => {
   return (
     <View style={styles.container}>
       <Image source={require('../../assets/images/Fala_campus-logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Apagar Departamento</Text>
+      <Text style={styles.title}>Departamentos</Text>
 
+      {/* Ícones de Editar e Excluir */}
+      <View style={styles.iconsContainer}>
+        <TouchableOpacity 
+          style={styles.iconButton} 
+          onPress={() => setIsEditing(!isEditing)}
+        >
+          <AntDesign name="edit" size={24} color="#6cb43f" />
+          <Text style={styles.iconText}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.iconButton} 
+          onPress={() => setIsDeleting(!isDeleting)}
+        >
+          <Feather name="trash-2" size={24} color="#ff4444" />
+          <Text style={styles.iconText}>Excluir</Text>
+        </TouchableOpacity>
+      </View>
       {/* Lista de departamentos */}
       <FlatList
         data={departments}
@@ -69,14 +124,22 @@ const ApagarDepartamento = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.departmentItem}
-            onPress={() => handleDeleteConfirmation(item)}
+            onPress={() => {
+              if (isEditing) handleEdit(item);
+              if (isDeleting) handleDeleteConfirmation(item);
+            }}
           >
             <Text style={styles.departmentName}>{item.nome}</Text>
+            {(isEditing || isDeleting) && (
+              <Text style={styles.modeText}>
+                {isEditing ? 'Toque para editar' : 'Toque para excluir'}
+              </Text>
+            )}
           </TouchableOpacity>
         )}
       />
 
-      {/* Modal de confirmação */}
+      {/* Modal de Exlusão */}
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -95,6 +158,37 @@ const ApagarDepartamento = () => {
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal de edição */}
+      <Modal
+        visible={editModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Editar Departamento</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nome do Departamento"
+              value={editName}
+              onChangeText={setEditName}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleSaveEdit}>
+                <Text style={styles.buttonText}>Salvar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setEditModalVisible(false)}
               >
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
@@ -175,6 +269,33 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 12,
     color: '#666',
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '95%',
+    padding: 10,
+    marginBottom: 0,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  modeText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+  },
+  iconButton: {
+    alignItems: 'center', // Centraliza o ícone e o texto horizontalmente
+  },
+  iconText: {
+    marginTop: 5, // Espaço entre o ícone e o texto
+    fontSize: 14,
+    color: '#333',
   },
 });
 
